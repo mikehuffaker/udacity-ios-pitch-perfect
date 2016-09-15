@@ -22,21 +22,18 @@ class RecordSoundsViewController: UIViewController , AVAudioRecorderDelegate
     {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        // MHH - Fix to look better in iPhone 5s/4s landscape with stack view
+        recordButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+        stopRecordingButton.imageView?.contentMode = UIViewContentMode.ScaleAspectFit
+
     }
 
-    override func didReceiveMemoryWarning()
-    {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     // MHH - Handle when the user presses the record button
     @IBAction func RecordAudio(sender: AnyObject)
     {
         print("RecordSoundsViewController: Record button pressed")
-        recordingLabel.text = "Recording in progress"
-        stopRecordingButton.enabled = true
-        recordButton.enabled = false
+        setUIButtonsAndLabels( false )
         
         let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory,.UserDomainMask, true)[0] as String
         let recordingName = "recordedVoice.wav"
@@ -58,19 +55,36 @@ class RecordSoundsViewController: UIViewController , AVAudioRecorderDelegate
     @IBAction func StopRecording(sender: AnyObject)
     {
         print( "RecordSoundsViewController: Stop recording button pressed" )
-        recordButton.enabled = true
-        stopRecordingButton.enabled = false
-        recordingLabel.text = "Tap to Record"
+        setUIButtonsAndLabels( true )
         
         // logic to stop recording class
         audioRecorder.stop()
         let audioSession = AVAudioSession.sharedInstance()
         try! audioSession.setActive(false)
     }
+    
+    // MHH - Helper method to turn buttons on/off and set label for ready to 
+    //       record or recording in progress.
+    func setUIButtonsAndLabels(recordMode: Bool)
+    {
+        if recordMode
+        {
+            recordButton.enabled = true
+            stopRecordingButton.enabled = false
+            recordingLabel.text = "Tap to Record"
+        }
+        else
+        {
+            stopRecordingButton.enabled = true
+            recordButton.enabled = false
+            recordingLabel.text = "Recording in progress"
+        }
+    }
 
     // MHH - When view is about to appear, make sure the stop button is initially disabled
     override func viewWillAppear(animated: Bool)
     {
+        super.viewWillAppear(animated)
         print( "RecordSoundsViewController: viewWillAppear() was called" )
         stopRecordingButton.enabled = false
     }
@@ -81,7 +95,7 @@ class RecordSoundsViewController: UIViewController , AVAudioRecorderDelegate
         print ( "RecordSoundsViewController: AVAudioRecorder finished saving recording" )
         if ( flag )
         {
-            self.performSegueWithIdentifier( "stopRecording", sender: audioRecorder.url )
+            performSegueWithIdentifier( "stopRecording", sender: audioRecorder.url )
         }
         else
         {
