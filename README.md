@@ -1,2 +1,1 @@
-
-Udacity Pitch Perfect iOS project - completed by Mike Huffaker
+Udacity Pitch Perfect iOS project solution - completed by Mike Huffaker
